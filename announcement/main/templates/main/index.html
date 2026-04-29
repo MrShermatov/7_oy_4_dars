@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="container mb-5">
+    <div class="p-5 mb-4 bg-primary rounded-4 text-white position-relative overflow-hidden">
+        <div class="row align-items-center position-relative z-1">
+            <div class="col-lg-7">
+                <h1 class="display-4 fw-bold mb-3">O'zingizga kerakli hamma narsani toping</h1>
+                <p class="lead mb-4">O'zbekistondagi eng tez va ishonchli e'lonlar platformasi. Bugunoq sotishni boshlang!</p>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'add_announcement' %}" class="btn btn-warning btn-lg fw-bold px-4">
+                        <i class="bi bi-plus-circle me-2"></i> E'lon berish
+                    </a>
+                    <a href="#announcements" class="btn btn-outline-light btn-lg px-4">Ko'proq ko'rish</a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-end">
+                <i class="bi bi-megaphone display-1 opacity-25" style="font-size: 10rem;"></i>
+            </div>
+        </div>
+        <!-- Decorative elements -->
+        <div class="position-absolute top-0 end-0 p-5 opacity-25 d-none d-lg-block">
+            <i class="bi bi-circle-fill display-1 text-white"></i>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="announcements">
+    <!-- Categories Filter -->
+    <div class="mb-5">
+        <h5 class="fw-bold mb-4">Kategoriyalar</h5>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'home' %}" class="btn {% if not category %}btn-primary{% else %}btn-outline-primary{% endif %} rounded-pill px-4">
+                Barchasi
+            </a>
+            {% for cat in categories %}
+            <a href="{% url 'announcement_by_categories' cat.id %}" 
+               class="btn {% if category.id == cat.id %}btn-primary{% else %}btn-outline-primary{% endif %} rounded-pill px-4">
+                {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Announcements Grid -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0">
+            {% if category %}
+                {{ category.name }} bo'yicha e'lonlar
+            {% else %}
+                Barcha e'lonlar
+            {% endif %}
+        </h4>
+        <div class="dropdown">
+            <button class="btn btn-white shadow-sm dropdown-toggle border-0" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-filter me-1"></i> Saralash
+            </button>
+            <ul class="dropdown-menu border-0 shadow">
+                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-clock me-2"></i> Yangi e'lonlar</a></li>
+                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-sort-numeric-down me-2"></i> Arzonroq</a></li>
+                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-sort-numeric-up me-2"></i> Qimmatroq</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+        {% for car in announcement %}
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm overflow-hidden">
+                <div class="position-relative">
+                    {% if car.image %}
+                    <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car.name }}" style="height: 220px; object-fit: cover;">
+                    {% else %}
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                        <i class="bi bi-image text-muted display-4"></i>
+                    </div>
+                    {% endif %}
+                    {% if car.category %}
+                    <span class="category-badge">{{ car.category.name }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-bold text-truncate mb-2">{{ car.name }}</h5>
+                    <div class="d-flex justify-content-between mb-3 small text-muted">
+                        <span><i class="bi bi-geo-alt me-1"></i> {{ car.location }}</span>
+                        <span><i class="bi bi-clock me-1"></i> {{ car.create_announcement|date:"d.m.Y" }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <span class="price-tag">${{ car.price }}</span>
+                        <a href="{% url 'detail' car.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                            Batafsil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="mb-4">
+                <i class="bi bi-search display-1 text-muted"></i>
+            </div>
+            <h4 class="fw-bold">Hech narsa topilmadi</h4>
+            <p class="text-muted">Bu bo'limda hozircha e'lonlar mavjud emas.</p>
+            <a href="{% url 'home' %}" class="btn btn-primary mt-3 px-4">Barcha e'lonlar</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

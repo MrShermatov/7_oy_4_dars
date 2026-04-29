@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+  <!-- Sidebar: Kategoriyalar -->
+  <div class="col-lg-3 mb-4">
+    <div class="card p-3">
+      <h5 class="fw-bold mb-3 border-bottom pb-2">Kategoriyalar</h5>
+      <div class="list-group list-group-flush">
+        <a href="/"
+          class="list-group-item list-group-item-action border-0 px-0 d-flex justify-content-between align-items-center">
+          Barchasi <i class="bi bi-chevron-right small"></i>
+        </a>
+        {% for category in categories %}
+        <a href="?category={{ category.id }}"
+          class="list-group-item list-group-item-action border-0 px-0 d-flex justify-content-between align-items-center">
+          {{ category.name }} <i class="bi bi-chevron-right small"></i>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- E'lonlar gridi -->
+  <div class="col-lg-9">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex align-items-center">
+        <h4 class="fw-bold m-0 me-3">Oxirgi e'lonlar</h4>
+        {% if user.is_staff %}
+        <a href="/add-announcement/" class="btn btn-primary btn-sm rounded-pill"><i class="bi bi-plus-lg"></i> Yangi
+          e'lon</a>
+        {% endif %}
+      </div>
+      <span class="badge bg-soft-primary text-primary">{{ announcements|length }} ta topildi</span>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      {% for announcement in announcements %}
+      <div class="col">
+        <div class="card h-100">
+          {% if announcement.image %}
+          <img src="{{ announcement.image.url }}" class="card-img-top" alt="{{ announcement.title }}"
+            style="height: 200px; object-fit: cover;">
+          {% endif %}
+          <div class="card-body">
+            <div class="text-primary small fw-bold mb-1">{{ announcement.category.name }}</div>
+            <h5 class="card-title fw-bold text-dark">{{ announcement.title|truncatechars:40 }}</h5>
+            <p class="card-text text-muted small">{{ announcement.description|truncatechars:80 }}</p>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <span class="fw-bold text-success">{{ announcement.price }} so'm</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

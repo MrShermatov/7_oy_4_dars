@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %} E'lonni o'chirish {% endblock %}
+
+{% block hero %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm border-top border-danger border-4">
+                <div class="card-body p-4 text-center">
+                    <i class="bi bi-exclamation-triangle text-danger display-4 mb-3"></i>
+                    <h3 class="fw-bold mb-3">E'lonni o'chirishni tasdiqlaysizmi?</h3>
+                    <p class="text-muted mb-4">
+                        Siz haqiqatan ham <strong>"{{ announcement.name }}"</strong> e'lonini o'chirmoqchimisiz? 
+                        Ushbu amalni ortga qaytarib bo'lmaydi.
+                    </p>
+                    
+                    <form method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg px-5 me-2">
+                            <i class="bi bi-trash me-2"></i> Ha, o'chirilsin
+                        </button>
+                    </form>
+                    <a href="{% url 'detail' announcement.id %}" class="btn btn-light btn-lg px-5 text-muted">
+                        Yo'q, qolsin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

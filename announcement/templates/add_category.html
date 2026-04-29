@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white py-3">
+        <h4 class="fw-bold m-0 text-success"><i class="bi bi-folder-plus me-2"></i>Yangi kategoriya</h4>
+      </div>
+      <div class="card-body p-4">
+        <form method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <hr>
+          <div class="d-flex justify-content-between">
+            <a href="/" class="btn btn-light border">Orqaga</a>
+            <button type="submit" class="btn btn-success px-4">Kategoriyani saqlash</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

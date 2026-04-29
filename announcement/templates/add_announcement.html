@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white py-3">
+        <h4 class="fw-bold m-0 text-primary"><i class="bi bi-megaphone me-2"></i>Yangi e'lon qo'shish</h4>
+      </div>
+      <div class="card-body p-4">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form|crispy }}
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between">
+            <a href="/" class="btn btn-light border">Bekor qilish</a>
+            <button type="submit" class="btn btn-primary px-4">Saqlash va e'lon qilish</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

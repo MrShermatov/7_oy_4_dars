@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ announcement.name }} - Batafsil {% endblock %}
+
+{% block hero %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">Bosh sahifa</a></li>
+            {% if announcement.category %}
+            <li class="breadcrumb-item"><a href="{% url 'announcement_by_categories' announcement.category.id %}"
+                    class="text-decoration-none">{{ announcement.category.name }}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active" aria-current="page">{{ announcement.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Rasm bo'limi -->
+        <div class="col-lg-7 mb-4">
+            <div class="card border-0 shadow-sm overflow-hidden">
+                {% if announcement.image %}
+                <img src="{{ announcement.image.url }}" class="img-fluid w-100" alt="{{ announcement.name }}"
+                    style="max-height: 500px; object-fit: cover;">
+                {% else %}
+                <div class="d-flex align-items-center justify-content-center bg-light text-muted"
+                    style="height: 400px;">
+                    <i class="bi bi-image display-1"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="mt-4">
+                <h4 class="fw-bold mb-3">Tavsif</h4>
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <p class="text-muted lead fs-6">
+                            {% if announcement.description %}
+                            {{ announcement.description|linebreaks }}
+                            {% else %}
+                            Ushbu e'lon bo'yicha qo'shimcha ma'lumot berilmagan.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Commentlar bo'limi -->
+            <div class="mt-5">
+                <h4 class="fw-bold mb-4">Sharhlar ({{ announcement.comment_set.count }})</h4>
+
+                {% if user.is_authenticated %}
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <form action="{% url 'create_comment' announcement.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="text" class="form-label fw-bold">Sharh qoldiring</label>
+                                <textarea name="text" id="text" class="form-control" rows="3"
+                                    placeholder="Fikringizni yozing..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary px-4">Yuborish</button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-info border-0 shadow-sm mb-4">
+                    Sharh qoldirish uchun <a href="#" class="alert-link">tizimga kiring</a>.
+                </div>
+                {% endif %}
+
+                <div class="comments-list">
+                    {% for comment in announcement.comment_set.all %}
+                    <div class="card border-0 shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                                        style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                        {{ comment.user.username|slice:":1"|upper }}
+                                    </div>
+                                    <span class="fw-bold">{{ comment.user.username }}</span>
+                                    <span class="text-muted ms-2 small">{{ comment.created|date:"d.m.Y H:i" }}</span>
+                                </div>
+
+                                <div class="dropdown">
+                                    <button class="btn btn-link text-muted p-0" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                        {% if user == comment.user %}
+                                        <li><a class="dropdown-item" href="{% url 'update_comment' comment.id %}"><i
+                                                    class="bi bi-pencil me-2"></i> Tahrirlash</a></li>
+                                        {% endif %}
+                                        {% if user == comment.user or user.is_superuser %}
+                                        <li><a class="dropdown-item text-danger"
+                                                href="{% url 'delete_comment' comment.id announcement.id %}"><i
+                                                    class="bi bi-trash me-2"></i> O'chirish</a></li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                            <p class="mb-0 text-muted">{{ comment.text }}</p>
+                            {% if comment.edited %}
+                            <small class="text-muted" style="font-size: 0.75rem;">(tahrirlangan)</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-center text-muted py-4">Hozircha sharhlar yo'q. Birinchi bo'lib sharh qoldiring!</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Ma'lumotlar bo'limi -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h1 class="h2 fw-bold mb-0">{{ announcement.name }}</h1>
+                        <button class="btn btn-outline-secondary btn-sm rounded-circle"><i
+                                class="bi bi-heart"></i></button>
+                    </div>
+
+                    <h2 class="text-primary fw-bold mb-4">${{ announcement.price }}</h2>
+
+                    <hr class="my-4">
+
+                    <h5 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i> Ma'lumotlar</h5>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <div class="p-2 border rounded bg-light">
+                                <small class="text-muted d-block">Kategoriya</small>
+                                <span class="fw-bold">{{ announcement.category.name|default:"Noma'lum" }}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 border rounded bg-light">
+                                <small class="text-muted d-block">Sana</small>
+                                <span class="fw-bold">{{ announcement.create_announcement|date:"d.m.Y" }}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 border rounded bg-light">
+                                <small class="text-muted d-block">Manzil</small>
+                                <span class="fw-bold">{{ announcement.location }}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 border rounded bg-light">
+                                <small class="text-muted d-block">Ko'rishlar</small>
+                                <span class="fw-bold">{{ announcement.views }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="tel:{{ announcement.number }}" class="btn btn-primary btn-lg"><i
+                                class="bi bi-telephone-fill me-2"></i> {{ announcement.number }}</a>
+                        <button class="btn btn-outline-primary btn-lg"><i class="bi bi-chat-dots-fill me-2"></i> Xabar
+                            yozish</button>
+                    </div>
+                </div>
+            </div>
+            {% if user.is_staff%}
+            <div class="card border-0 shadow-sm border-start border-warning border-4 mb-4">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3 text-warning">Boshqaruv paneli</h6>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'update_announcement' announcement.id %}"
+                            class="btn btn-warning btn-sm flex-grow-1 text-white fw-bold">
+                            <i class="bi bi-pencil-square me-1"></i> Tahrirlash
+                        </a>
+                        <a href="{% url 'announcement_delete' announcement.id %}"
+                            class="btn btn-danger btn-sm flex-grow-1 fw-bold">
+                            <i class="bi bi-trash me-1"></i> O'chirish
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <a href="{% url 'home' %}" class="btn btn-link text-decoration-none text-muted p-0">
+                <i class="bi bi-arrow-left me-1"></i> Orqaga qaytish
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

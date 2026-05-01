@@ -54,15 +54,18 @@ class AnnouncementForm(forms.ModelForm):
             })
         }
 
-
     def clean_number(self):
         number = self.cleaned_data.get('number')
         cleaned = number.replace('+', '').replace('-', '').replace(' ', '')
+
         if not cleaned.isdigit():
-            raise ValidationError(f"Faaqat raqam kiriting.")
-        if len(number) == 9 or len(number) <= 15:
-            raise ValidationError('Raqam kamida 9 xonali bo\'lsin')
-        return number
+            raise ValidationError("Faqat raqam kiriting.")
+
+        if len(cleaned) < 9:
+            raise ValidationError("Raqam kamida 9 xonali bo'lishi kerak.")
+        if len(cleaned) > 15:
+            raise ValidationError("Raqam juda uzun (maksimal 15 xona).")
+        return cleaned
 
     def clean(self):
         cleaned_data = super().clean()

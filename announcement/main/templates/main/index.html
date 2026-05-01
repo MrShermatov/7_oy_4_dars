@@ -7,7 +7,8 @@
         <div class="row align-items-center position-relative z-1">
             <div class="col-lg-7">
                 <h1 class="display-4 fw-bold mb-3">O'zingizga kerakli hamma narsani toping</h1>
-                <p class="lead mb-4">O'zbekistondagi eng tez va ishonchli e'lonlar platformasi. Bugunoq sotishni boshlang!</p>
+                <p class="lead mb-4">O'zbekistondagi eng tez va ishonchli e'lonlar platformasi. Bugunoq sotishni
+                    boshlang!</p>
                 <div class="d-flex gap-2">
                     <a href="{% url 'add_announcement' %}" class="btn btn-warning btn-lg fw-bold px-4">
                         <i class="bi bi-plus-circle me-2"></i> E'lon berish
@@ -31,12 +32,13 @@
     <div class="mb-5">
         <h5 class="fw-bold mb-4">Kategoriyalar</h5>
         <div class="d-flex flex-wrap gap-2">
-            <a href="{% url 'home' %}" class="btn {% if not category %}btn-primary{% else %}btn-outline-primary{% endif %} rounded-pill px-4">
+            <a href="{% url 'home' %}"
+                class="btn {% if not category %}btn-primary{% else %}btn-outline-primary{% endif %} rounded-pill px-4">
                 Barchasi
             </a>
             {% for cat in categories %}
-            <a href="{% url 'announcement_by_categories' cat.id %}" 
-               class="btn {% if category.id == cat.id %}btn-primary{% else %}btn-outline-primary{% endif %} rounded-pill px-4">
+            <a href="{% url 'announcement_by_categories' cat.id %}"
+                class="btn {% if category.id == cat.id %}btn-primary{% else %}btn-outline-primary{% endif %} rounded-pill px-4">
                 {{ cat.name }}
             </a>
             {% endfor %}
@@ -47,9 +49,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold mb-0">
             {% if category %}
-                {{ category.name }} bo'yicha e'lonlar
+            {{ category.name }} bo'yicha e'lonlar
             {% else %}
-                Barcha e'lonlar
+            Barcha e'lonlar
             {% endif %}
         </h4>
         <div class="dropdown">
@@ -58,7 +60,8 @@
             </button>
             <ul class="dropdown-menu border-0 shadow">
                 <li><a class="dropdown-item py-2" href="#"><i class="bi bi-clock me-2"></i> Yangi e'lonlar</a></li>
-                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-sort-numeric-down me-2"></i> Arzonroq</a></li>
+                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-sort-numeric-down me-2"></i> Arzonroq</a>
+                </li>
                 <li><a class="dropdown-item py-2" href="#"><i class="bi bi-sort-numeric-up me-2"></i> Qimmatroq</a></li>
             </ul>
         </div>
@@ -68,30 +71,50 @@
         {% for car in announcement %}
         <div class="col">
             <div class="card h-100 border-0 shadow-sm overflow-hidden">
-                <div class="position-relative">
-                    {% if car.image %}
-                    <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car.name }}" style="height: 220px; object-fit: cover;">
-                    {% else %}
-                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
-                        <i class="bi bi-image text-muted display-4"></i>
-                    </div>
-                    {% endif %}
-                    {% if car.category %}
-                    <span class="category-badge">{{ car.category.name }}</span>
-                    {% endif %}
+                <div style="position: relative;">
+                    <a href="{% url 'detail' car.id %}">
+                        {% if car.image %}
+                        <img src="{{ car.image.url }}" class="card-img-top" alt="{{ car.name }}"
+                            style="height: 220px; object-fit: cover;">
+                        {% else %}
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSueLDTO5JKcsRGrSr0ELwN7d03DPqIkxoyvA&s"
+                            class="card-img-top" alt="..." style="height: 220px; object-fit: cover;">
+                        {% endif %}
+                    </a>
                 </div>
 
                 <div class="card-body p-4">
-                    <h5 class="card-title fw-bold text-truncate mb-2">{{ car.name }}</h5>
+                    {% if car.category %}
+                    <div class="mb-2">
+                        <span class="badge bg-light text-primary border">{{ car.category.name }}</span>
+                    </div>
+                    {% endif %}
+                    <a href="{% url 'detail' car.id %}" class="text-decoration-none text-dark">
+                        <h5 class="card-title fw-bold text-truncate mb-2">{{ car.name }}</h5>
+                    </a>
+                    <p class="card-text text-muted small">{{ car.description|truncatewords:10 }}</p>
                     <div class="d-flex justify-content-between mb-3 small text-muted">
                         <span><i class="bi bi-geo-alt me-1"></i> {{ car.location }}</span>
                         <span><i class="bi bi-clock me-1"></i> {{ car.create_announcement|date:"d.m.Y" }}</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mt-auto">
-                        <span class="price-tag">${{ car.price }}</span>
-                        <a href="{% url 'detail' car.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                            Batafsil
-                        </a>
+                        <span class="price-tag fw-bold text-primary">${{ car.price }}</span>
+                        <div class="d-flex gap-2 align-items-center">
+                            <a href="{% url 'add_announcementmark' car.id %}"
+                                class="btn btn-light btn-sm rounded-circle shadow-sm border">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="{% if car.id in mark_list %}#e53935{% else %}none{% endif %}"
+                                    stroke="{% if car.id in mark_list %}#e53935{% else %}#555{% endif %}"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                                </svg>
+                            </a>
+                            <a href="{% url 'detail' car.id %}"
+                                class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                Batafsil
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

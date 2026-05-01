@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.db import models
-from telethon.tl.types import Folder
 
 
 class Category(models.Model):
@@ -11,7 +10,6 @@ class Category(models.Model):
 
     def __repr__(self):
         return f"PK: {self.pk}. Name: {self.name}"
-
 
 class Announcement(models.Model):
     name = models.CharField(max_length=150)
@@ -31,13 +29,18 @@ class Announcement(models.Model):
     def __repr__(self):
         return f"PK: {self.pk}. Name: {self.name}"
 
-
 class Comment(models.Model):
     text = models.CharField(max_length=500)
     created = models.DateTimeField(auto_now_add=True)
-    book = models.ForeignKey(Announcement, on_delete=models.CASCADE)
+    re_announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     edited = models.BooleanField(default=False)
     def __str__(self):
-        return self.user.username
+        return self.user.username if self.user else "Anonymous"
 
+class AnnouncementMark(models.Model):
+    re_announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE, related_name='marks')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.re_announcement.name} -> {self.user.username}"

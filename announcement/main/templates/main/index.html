@@ -68,7 +68,7 @@
     </div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
-        {% for car in announcement %}
+        {% for car in page.object_list %}
         <div class="col">
             <div class="card h-100 border-0 shadow-sm overflow-hidden">
                 <div style="position: relative;">
@@ -129,6 +129,7 @@
             <a href="{% url 'home' %}" class="btn btn-primary mt-3 px-4">Barcha e'lonlar</a>
         </div>
         {% endfor %}
+	    {% include 'main/components/_pagination.html' %}
     </div>
 </div>
 {% endblock %}

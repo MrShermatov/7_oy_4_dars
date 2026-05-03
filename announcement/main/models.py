@@ -11,6 +11,13 @@ class Category(models.Model):
     def __repr__(self):
         return f"PK: {self.pk}. Name: {self.name}"
 
+class Author(models.Model):
+    full_name = models.CharField(max_length=100)
+    address = models.CharField(max_length=100, null=True, blank=True)
+
+    def __str__(self):
+        return self.full_name
+
 class Announcement(models.Model):
     name = models.CharField(max_length=150)
     create_announcement = models.DateTimeField(auto_now_add=True)
@@ -21,6 +28,7 @@ class Announcement(models.Model):
     location = models.CharField(max_length=100)
     views = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
+    author = models.ManyToManyField(Author, related_name='announcements')
     image = models.ImageField(upload_to='images/', blank=True, null=True)
 
     def __str__(self):
@@ -28,6 +36,14 @@ class Announcement(models.Model):
 
     def __repr__(self):
         return f"PK: {self.pk}. Name: {self.name}"
+
+class AnnouncementStatus(models.Model):
+    STATUS_ANNOUNCEMENT = [
+        ('active', 'Faol'),
+        ('noactive', 'Faol emas')
+    ]
+    status = models.CharField(max_length=30, choices=STATUS_ANNOUNCEMENT, default='active')
+    announcement = models.OneToOneField('Announcement', on_delete=models.CASCADE, related_name='status')
 
 class Comment(models.Model):
     text = models.CharField(max_length=500)

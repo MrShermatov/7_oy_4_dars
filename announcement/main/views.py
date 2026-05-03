@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.core.paginator import Paginator
 from .models import Category, Announcement, Comment, AnnouncementMark
 from .forms import CategoryForm, AnnouncementForm, CommentForm
 from django.http import HttpRequest
@@ -23,10 +24,11 @@ def announcement_all(request: HttpRequest):
     else:
         announcement = Announcement.objects.all()
         mark_list = []
-
+    paginator = Paginator(announcement, per_page=3)
+    page = paginator.page(request.GET.get('page', 1))
     context = {
         'categories': categories,
-        'announcement': announcement,
+        'page': page,
         'mark_list': mark_list,
         'title': "EloHub"
     }
@@ -65,6 +67,7 @@ def add_announcement(request: HttpRequest):
             form = AnnouncementForm(data=request.POST, files=request.FILES)
             if form.is_valid():
                 announcement = form.save()
+                messages.success(request, "Elon muvaffaqiyatli qo'shildi !!!")
                 return redirect('detail', announcement_id=announcement.id)
         else:
             form = AnnouncementForm()
@@ -101,11 +104,13 @@ def announcement_delete(request: HttpRequest, announcement_id: int):
     if request.user.is_staff:
         if request.method == 'POST':
             announcement.delete()
+            messages.success(request,'Kitop muvaffaqilyatli ochirildi')
             return redirect('home')
 
         context = {
             'announcement': announcement
         }
+        messages.error(request, 'shu kitopni ochirmoqchimisz')
         return render(request, 'main/delete_announcement.html', context)
     else:
         return redirect('home')

@@ -163,6 +163,18 @@
                                 <span class="fw-bold">{{ announcement.views }}</span>
                             </div>
                         </div>
+	                    <div class="col-6">
+		                    <div class="p-2 border rounded bg-light">
+		                    <h5>Murojat uchun</h5>
+		                    
+		                    {% for author in announcement.author.all %}
+		                    
+		                        <a href="#">{{ author.full_name }} {% if not forloop.last %}, {% endif %}</a>
+		                    {% empty %}
+		                        Muallif yo'q
+		                    {%endfor%}
+		                    </div>
+	                    </div>
                     </div>
 
                     <div class="d-grid gap-2">

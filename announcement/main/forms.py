@@ -70,11 +70,11 @@ class AnnouncementForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         price = cleaned_data.get('price')
-        if price <= 0:
+        if price is not None  and price <= 0:
             raise ValidationError("Narx 0 dan katta bo'lsin")
 
         name = cleaned_data.get('name')
-        if len(name) <= 5:
+        if name and len(name) <= 5:
             raise ValidationError('Kamida 5 belgidan iborat bo\'lsin')
 
 class CommentForm(forms.ModelForm):

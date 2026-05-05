@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panelga Kirish | ELONLAR.UZ</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .login-header i {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+
+        .login-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        .login-body {
+            padding: 35px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .input-group-text {
+            background: #f8f9fa;
+            border-right: none;
+        }
+
+        .form-control {
+            border-left: none;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: none;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            width: 100%;
+            color: white;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .alert {
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .forgot-password a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .back-to-site {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-to-site a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: opacity 0.2s;
+        }
+
+        .back-to-site a:hover {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 480px) {
+            .login-header {
+                padding: 30px 20px;
+            }
+
+            .login-body {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <i class="bi bi-shield-lock-fill"></i>
+                <h2>Admin Panel</h2>
+                <p>Iltimos, tizimga kirish uchun ma'lumotlaringizni kiriting</p>
+            </div>
+
+            <div class="login-body">
+                <!-- Xabarlar (xatolik yoki muvaffaqiyat) -->
+                
+                <div class="alert alert-danger d-none" role="alert" id="errorAlert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span id="errorMessage">Login yoki parol noto'g'ri!</span>
+                </div>
+
+                <div class="alert alert-success d-none" role="alert" id="successAlert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <span id="successMessage">Muvaffaqiyatli kirdingiz!</span>
+                </div>
+
+                <!-- Django uchun CSRF token va login form -->
+                <form method="post" action="/admin/login/?next=/admin/" id="loginForm">
+                    <!-- CSRF token - Django uchun majburiy -->
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                    
+                    <div class="form-group">
+                        <label for="username">
+                            <i class="bi bi-person-circle me-1"></i> Foydalanuvchi nomi
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-person"></i>
+                            </span>
+                            <input type="text"
+                                   class="form-control"
+                                   id="username"
+                                   name="username"
+                                   placeholder="admin yoki foydalanuvchi nomi"
+                                   required
+                                   autofocus>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">
+                            <i class="bi bi-key me-1"></i> Parol
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-lock"></i>
+                            </span>
+                            <input type="password"
+                                   class="form-control"
+                                   id="password"
+                                   name="password"
+                                   placeholder="●●●●●●●●"
+                                   required>
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-login">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Kirish
+                    </button>
+
+                    <div class="forgot-password">
+                        <a href="/admin/password_reset/">
+                            <i class="bi bi-question-circle"></i> Parolingizni unutdingizmi?
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="back-to-site">
+            <a href="/">
+                <i class="bi bi-arrow-left"></i> Bosh sahifaga qaytish
+            </a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (ixtiyoriy, faqat toggle password uchun) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Parolni ko'rsatish/yashirish funksiyasi
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        if (togglePassword) {
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                const icon = this.querySelector('i');
+                if (type === 'text') {
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            });
+        }
+
+        // Agar URLda xatolik parametri bo'lsa (Django'dan kelgan xabarlar)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('error') === '1') {
+            showError('Login yoki parol noto\'g\'ri! Iltimos qaytadan urinib ko\'ring.');
+        }
+
+        // Form yuborilganda validatsiya
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!username) {
+                e.preventDefault();
+                showError('Iltimos, foydalanuvchi nomini kiriting!');
+                return false;
+            }
+            
+            if (!password) {
+                e.preventDefault();
+                showError('Iltimos, parolingizni kiriting!');
+                return false;
+            }
+        });
+
+        // Xatolik xabarini ko'rsatish funksiyasi
+        function showError(message) {
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Avval boshqa alertlarni yashirish
+            document.getElementById('successAlert').classList.add('d-none');
+            
+            errorMessage.textContent = message;
+            errorAlert.classList.remove('d-none');
+            
+            // 5 soniyadan keyin avtomatik yashirish
+            setTimeout(() => {
+                errorAlert.classList.add('d-none');
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successAlert = document.getElementById('successAlert');
+            const successMessage = document.getElementById('successMessage');
+            
+            document.getElementById('errorAlert').classList.add('d-none');
+            successMessage.textContent = message;
+            successAlert.classList.remove('d-none');
+            
+            setTimeout(() => {
+                successAlert.classList.add('d-none');
+            }, 3000);
+        }
+
+        // Django'dan kelgan xabarlarni qayta ishlash (agar messages bo'lsa)
+        // Bu yerda siz Django'dan gibernate qilib, JavaScript orqali ham xabar olishingiz mumkin
+        // Misol uchun, agar Django session'da xatolik bo'lsa
+    </script>
+</body>
+</html>

@@ -163,18 +163,20 @@
                                 <span class="fw-bold">{{ announcement.views }}</span>
                             </div>
                         </div>
-	                    <div class="col-6">
-		                    <div class="p-2 border rounded bg-light">
-		                    <h5>Murojat uchun</h5>
-		                    
-		                    {% for author in announcement.author.all %}
-		                    
-		                        <a href="#">{{ author.full_name }} {% if not forloop.last %}, {% endif %}</a>
-		                    {% empty %}
-		                        Muallif yo'q
-		                    {%endfor%}
-		                    </div>
-	                    </div>
+                    </div>
+
+                    <!-- Author qismi to'g'rilangan -->
+                    <div class="mb-4 p-2 border rounded bg-light">
+                        <small class="text-muted d-block">Mualliflar</small>
+                        <div class="fw-bold">
+                            {% for author in announcement.author.all %}
+                            <a href="{% url 'author_detail' author_id=author.id %}" class="text-decoration-none">
+                                {{ author.full_name }}{% if not forloop.last %}, {% endif %}
+                            </a>
+                            {% empty %}
+                            <span class="text-muted">Muallif yo'q</span>
+                            {% endfor %}
+                        </div>
                     </div>
 
                     <div class="d-grid gap-2">

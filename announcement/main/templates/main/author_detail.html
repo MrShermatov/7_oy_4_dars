@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ author.full_name }} - Muallif detali{% endblock %}
+
+{% block hero %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Bosh sahifa</a></li>
+            <li class="breadcrumb-item active">{{ author.full_name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
+                        style="width: 120px; height: 120px; font-size: 3rem;">
+                        {{ author.full_name|slice:":1"|upper }}
+                    </div>
+                    <h3 class="fw-bold">{{ author.full_name }}</h3>
+                    {% if author.address %}
+                    <p class="text-muted"><i class="bi bi-geo-alt me-2"></i>{{ author.address }}</p>
+                    {% endif %}
+                    {% if author.number %}
+                    <p class="text-muted"><i class="bi bi-telephone me-2"></i>{{ author.number }}</p>
+                    {% endif %}
+                    <hr>
+                    <p><strong>Jami e'lonlar:</strong> {{ announcement_count }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <h4 class="fw-bold mb-4">{{ author.full_name }} ning e'lonlari</h4>
+            
+            {% for announcement in user_announcements %}
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="fw-bold">
+                                <a href="{% url 'detail' announcement.id %}" class="text-decoration-none">
+                                    {{ announcement.name }}
+                                </a>
+                            </h5>
+                            <p class="text-muted mb-2">{{ announcement.description|truncatewords:30 }}</p>
+                            <div class="d-flex gap-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-tag me-1"></i>{{ announcement.category.name|default:"Kategoriyasiz" }}
+                                </small>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar me-1"></i>{{ announcement.create_announcement|date:"d.m.Y" }}
+                                </small>
+                                <small class="text-muted">
+                                    <i class="bi bi-eye me-1"></i>{{ announcement.views }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-primary fw-bold fs-5">${{ announcement.price }}</span>
+                            <br>
+                            <a href="{% url 'add_announcementmark' announcement.id %}" class="btn btn-sm btn-outline-danger mt-2">
+                                {% if announcement.id in mark_list %}❤️{% else %}🤍{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-info">
+                Bu muallifning hozircha e'lonlari yo'q.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

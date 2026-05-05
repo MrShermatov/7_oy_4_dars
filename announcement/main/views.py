@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
-from .models import Category, Announcement, Comment, AnnouncementMark
+from .models import Category, Announcement, Comment, AnnouncementMark, Author
 from .forms import CategoryForm, AnnouncementForm, CommentForm
 from django.http import HttpRequest
 
@@ -232,3 +232,20 @@ def navbar_announcementmark(request: HttpRequest):
 
     return render(request, 'main/index.html', context)
 # ------------------------------end AnnouncementMark-----------------------------
+
+@login_required(login_url='home')
+def author_detail(request: HttpRequest, author_id: int):
+    author = get_object_or_404(Author, id=author_id)
+    user_announcements = Announcement.objects.filter(author=author)
+    marked_announcements = Announcement.objects.filter(marks__user=request.user)
+    mark_list = marked_announcements.values_list('id', flat=True)
+    categories = Category.objects.all()
+
+    context = {
+        'author': author,
+        'user_announcements': user_announcements,
+        'mark_list': mark_list,
+        'categories': categories,
+    }
+
+    return render(request, 'main/author_detail.html', context)

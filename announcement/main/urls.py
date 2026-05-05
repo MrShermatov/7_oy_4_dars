@@ -2,7 +2,8 @@ from django.urls import path
 from .views import (announcement_all, announcement_by_categories,
                     add_announcement, detail, update_announcement,
                     announcement_delete, add_category, update_category, delete_category,
-                    create_comment, update_comment, delete_comment, add_announcementmark, navbar_announcementmark)
+                    create_comment, update_comment, delete_comment, add_announcementmark, navbar_announcementmark,
+                    author_detail)
 
 urlpatterns = [
     path('', announcement_all, name='home'),
@@ -21,5 +22,5 @@ urlpatterns = [
 
     path('announcement/add/announcementmark/<int:announcement_id>/', add_announcementmark,name='add_announcementmark'),
     path('wishlist/', navbar_announcementmark, name='navbar_announcementmark'),
-
+    path('author/<int:author_id>/', author_detail, name='author_detail'),
 ]

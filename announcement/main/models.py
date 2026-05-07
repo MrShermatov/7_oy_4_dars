@@ -3,11 +3,11 @@ from django.db import models
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=150, unique=True, verbose_name="Bo'lim nomi")
+    name = models.CharField(max_length=150, unique=True, verbose_name="Kategoriya nomi")
 
     class Meta:
-        verbose_name = "Bo'lim"
-        verbose_name_plural = "Bo'limlar"
+        verbose_name = "Kategoriya"
+        verbose_name_plural = "Kategoriyalar"
 
     def __str__(self):
         return self.name
@@ -39,7 +39,7 @@ class Announcement(models.Model):
     is_active = models.BooleanField(default=True)
     author = models.ManyToManyField(Author, related_name='announcements', verbose_name='Elon egasi')
     image = models.ImageField(upload_to='images/', blank=True, null=True, verbose_name='Rasm')
-
+    video = models.FileField(upload_to='videos/', blank=True, null=True, verbose_name='Video')
     class Meta:
         verbose_name = "E'lon"
         verbose_name_plural = "E'lonlar"
@@ -77,6 +77,13 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.user.username if self.user else "Anonymous"
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            old = Comment.objects.get(pk=self.pk)
+            if old.text != self.text:
+                self.edited = True
+        super().save(*args, **kwargs)
 
 class AnnouncementMark(models.Model):
     re_announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE, related_name='marks')
